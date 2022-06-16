@@ -44,6 +44,8 @@ public class AbortPolicyWithReport extends ThreadPoolExecutor.AbortPolicy {
 
     private final URL url;
 
+    private final boolean disableDumpJStack = Boolean.getBoolean("dubbo.threadpool.disable-dump-jstack");
+
     private static volatile long lastPrintTime = 0;
 
     private static Semaphore guard = new Semaphore(1);
@@ -67,6 +69,11 @@ public class AbortPolicyWithReport extends ThreadPoolExecutor.AbortPolicy {
     }
 
     private void dumpJStack() {
+        if (disableDumpJStack) {
+            logger.warn("dump-jstack was disabled");
+            return;
+        }
+
         long now = System.currentTimeMillis();
 
         //dump every 10 minutes
